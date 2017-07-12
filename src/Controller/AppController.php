@@ -43,6 +43,18 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->loadComponent('Auth', [
+            'loginRedirect' => [
+                'controller' => 'Users',
+                'action' => 'index'
+            ],
+            'logoutRedirect' => [
+                'controller' => 'Users',
+                'action' => 'login',
+            ],
+            'authorize' => ['Controller'],
+            'authError' => 'Access Denied'
+        ]);
     }
 
     /**
@@ -53,10 +65,32 @@ class AppController extends Controller
      */
     public function beforeRender(Event $event)
     {
+        // die('aa');
         if (!array_key_exists('_serialize', $this->viewVars) &&
             in_array($this->response->type(), ['application/json', 'application/xml'])
         ) {
             $this->set('_serialize', true);
         }
+    }
+    public function beforeFilter(Event $event)
+    {
+        if ($this->request->prefix === null) {
+            $this->Auth->allow();
+        }
+    }
+    public function isAuthorized($user = null)
+    {
+        // Any registered user can access public functions
+        if (!$this->request->param('prefix')) {
+            return true;
+        }
+
+        // Only admins can access admin functions
+        if ($this->request->param('prefix') === 'admin') {
+            return (bool)($user['role'] === 'admin');
+        }
+
+        // Default deny
+        return false;
     }
 }

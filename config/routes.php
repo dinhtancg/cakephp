@@ -53,7 +53,9 @@ Router::scope('/', function ($routes) {
      * ...and connect the rest of 'Pages' controller's URLs.
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
-
+    $routes->connect('/users', ['controller' => 'users', 'action'=>'index']);
+    $routes->connect('/users/login', ['controller' => 'users', 'action'=>'login']);
+    $routes->connect('/users/logout', ['controller' => 'users', 'action'=>'logout']);
     /**
      * Connect catchall routes for all controllers.
      *
@@ -72,7 +74,10 @@ Router::scope('/', function ($routes) {
      */
     $routes->fallbacks('DashedRoute');
 });
-
+Router::prefix('admin', function ($routes) {
+    $routes->connect('/users', ['controller'=> 'Users', 'action' => 'index', 'prefix' => 'admin', 'plugin' => null]);
+    $routes->fallbacks(DashedRoute::class);
+});
 /**
  * Load all plugin routes.  See the Plugin documentation on
  * how to customize the loading of plugin routes.
