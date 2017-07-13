@@ -3,3 +3,5 @@
 /webroot/debug_kit
 /vendor
 /plugins/DebugKit
+/tmp
+.gitignore
